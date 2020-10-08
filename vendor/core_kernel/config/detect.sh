@@ -4,23 +4,36 @@
 
 set -e
 
-if ld -lm -shared --wrap caml_modify -o /dev/null 2>/dev/null; then
-    ld_wrap_possible=true
-else
-    ld_wrap_possible=false
-fi
-
-ptimer=`getconf _POSIX_TIMERS || echo undefined`
-case $ptimer in
-    undefined)
+system="$(ocamlc -config | sed -ne '/^system: //p')"
+case "$system" in
+    win*)
+        ld_wrap_possible=false
+        posix_timers_possible=false
+        ;;
+    mingw*)
+        ld_wrap_possible=false
         posix_timers_possible=false
         ;;
     *)
-        if [ $ptimer -ge 200111 ]; then
-            posix_timers_possible=true
+        if ld -lm -shared --wrap caml_modify -o /dev/null 2>/dev/null; then
+            ld_wrap_possible=true
         else
-            posix_timers_possible=false
+            ld_wrap_possible=false
         fi
+
+        ptimer=`getconf _POSIX_TIMERS || echo undefined`
+        case $ptimer in
+            undefined)
+                posix_timers_possible=false
+                ;;
+            *)
+                if [ $ptimer -ge 200111 ]; then
+                    posix_timers_possible=true
+                else
+                    posix_timers_possible=false
+                fi
+                ;;
+        esac
         ;;
 esac
 

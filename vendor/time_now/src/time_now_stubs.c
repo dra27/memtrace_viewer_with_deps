@@ -21,6 +21,20 @@ CAMLprim value time_now_nanoseconds_since_unix_epoch_or_zero()
 
 #else
 
+#ifdef _MSC_VER
+#include <windows.h>
+
+CAMLprim value time_now_nanoseconds_since_unix_epoch_or_zero()
+{
+  FILETIME ft;
+  ULARGE_INTEGER stamp;
+
+  GetSystemTimeAsFileTimePrecise(&ft);
+  stamp.LowPart = ft.dwLowDateTime;
+  stamp.HighPart = ft.dwHighDateTime;
+  return caml_alloc_int63(100 * (stamp.QuadPart - 116444736000000000LL));
+}
+#else
 #include <sys/types.h>
 #include <sys/time.h>
 
@@ -32,5 +46,6 @@ CAMLprim value time_now_nanoseconds_since_unix_epoch_or_zero()
   else
     return caml_alloc_int63(NANOS_PER_SECOND * (uint64_t)tp.tv_sec + (uint64_t)tp.tv_usec * 1000);
 }
+#endif
 
 #endif

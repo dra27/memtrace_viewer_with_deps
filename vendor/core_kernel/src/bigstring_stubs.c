@@ -11,7 +11,9 @@
 #endif
 
 #include <string.h>
+#ifndef _MSC_VER
 #include <unistd.h>
+#endif
 #include <errno.h>
 #include <assert.h>
 #include <stdint.h>
@@ -25,6 +27,10 @@
 #define bswap_16 __builtin_bswap16
 #define bswap_32 __builtin_bswap32
 #define bswap_64 __builtin_bswap64
+#elif _MSC_VER
+#define bswap_16 _byteswap_ushort
+#define bswap_32 _byteswap_ulong
+#define bswap_64 _byteswap_uint64
 #elif __GLIBC__
 #include <byteswap.h>
 #include <malloc.h>

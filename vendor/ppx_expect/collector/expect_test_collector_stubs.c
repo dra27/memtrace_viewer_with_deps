@@ -2,7 +2,9 @@
 #include <caml/fail.h>
 #include <caml/signals.h>
 #include <caml/mlvalues.h>
+#ifndef _MSC_VER
 #include <unistd.h>
+#endif
 
 /* #include <caml/io.h> */
 

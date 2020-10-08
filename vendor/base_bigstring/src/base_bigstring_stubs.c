@@ -31,6 +31,10 @@
 #define bswap_64 swap64
 #elif __CYGWIN__
 #include <endian.h>
+#elif __MINGW32__
+#define bswap_16 __builtin_bswap16
+#define bswap_32 __builtin_bswap32
+#define bswap_64 __builtin_bswap64
 #else
 #include <sys/types.h>
 #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
